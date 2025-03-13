@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Busca de Pátios e Terminais Ferroviários</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f6f6f7; 
+            color: #333;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .container {
+            text-align: center;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .search-container {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            color: #1B3255; /* Azul escuro */
+        }
+        input[type="text"] {
+            padding: 10px;
+            border: 2px solid #1B3255; /* Azul escuro */
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #1B3255; /* Azul escuro */
+        }
+        h2 {
+            color: #1B3255; /* Azul escuro */
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 5px 0;
+            border-bottom: 1px solid #ddd; /* Cinza claro */
+        }
+        li:last-child {
+            border-bottom: none;
+        }
+        p {
+            color: #1B3255; /* Azul escuro */
+        }
+        .trem {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script>
+        let jsonData = [];
+
+        function carregarDados() {
+            fetch('patios.xlsx')
+                .then(response => response.arrayBuffer())
+                .then(data => {
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    jsonData = XLSX.utils.sheet_to_json(sheet);
+                    exibirPatios(jsonData);
+                })
+                .catch(error => {
+                    console.error('Erro ao ler o arquivo Excel:', error);
+                });
+        }
+
+        function exibirPatios(patios) {
+            const resultadoDiv = document.getElementById('resultado');
+            let resultadoHTML = '';
+
+            patios.forEach(patio => {
+                resultadoHTML += `
+                    <div>
+                        <p><strong>Sigla do Pátio:</strong> ${patio['Sigla Patio'] || 'Não tem'}</p>
+                        <p><strong>Nome do Pátio:</strong> ${patio.Patio || 'Não tem'}</p>
+                        <p><strong>Região:</strong> ${patio.Região || 'Não tem'}</p>
+                        <p><strong>UF:</strong> ${patio.UF || 'Não tem'}</p>
+                        <p><strong>Município:</strong> ${patio.Município || 'Não tem'}</p>
+                        <p><strong>Sigla do Terminal:</strong> ${patio['Sigla Terminal'] || 'Não tem'}</p>
+                        <p><strong>Nome do Terminal:</strong> ${patio.Terminal || 'Não tem'}</p>
+                    </div>
+                    <hr>
+                `;
+            });
+
+            resultadoDiv.innerHTML = resultadoHTML;
+        }
+
+        function buscarPatio() {
+            const termo = document.getElementById('siglaInput').value.toUpperCase();
+            const patiosFiltrados = jsonData.filter(p => 
+                p['Sigla Patio'].includes(termo) || p.Patio.toUpperCase().includes(termo)
+            );
+            exibirPatios(patiosFiltrados);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarDados();
+            document.getElementById('siglaInput').addEventListener('input', buscarPatio);
+        });
+    </script>
+</head>
+<body>
+    <div class="logo">
+        <img src="https://www.mrs.com.br/wp-content/themes/mrsmobile/img/logo.png" alt="Logo MRS">
+    </div>
+    <h1>Busca de Pátios e Terminais Ferroviários</h1>
+    <div class="search-container">
+        <input type="text" id="siglaInput" placeholder="Digite a sigla ou nome do pátio">
+    </div>
+    <div id="resultado"></div>
+</body>
+</html>
