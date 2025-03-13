@@ -73,8 +73,15 @@
         let jsonData = [];
 
         function carregarDados() {
-            fetch('patios.xlsx')
-                .then(response => response.arrayBuffer())
+            const url = 'patios.xlsx'; // Certifique-se de que o arquivo Excel está na mesma pasta que este arquivo HTML
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao acessar o arquivo Excel');
+                    }
+                    return response.arrayBuffer();
+                })
                 .then(data => {
                     const workbook = XLSX.read(data, { type: 'array' });
                     const sheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -83,6 +90,7 @@
                 })
                 .catch(error => {
                     console.error('Erro ao ler o arquivo Excel:', error);
+                    document.getElementById('resultado').innerHTML = '<p>Erro ao acessar os dados. Verifique o link do arquivo Excel.</p>';
                 });
         }
 
@@ -123,9 +131,6 @@
     </script>
 </head>
 <body>
-    <div class="logo">
-        <img src="https://www.mrs.com.br/wp-content/themes/mrsmobile/img/logo.png" alt="Logo MRS">
-    </div>
     <h1>Busca de Pátios e Terminais Ferroviários</h1>
     <div class="search-container">
         <input type="text" id="siglaInput" placeholder="Digite a sigla ou nome do pátio">
