@@ -7,7 +7,7 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            background-color: #f6f6f7; 
+            background-color: #f6f6f7;
             color: #333;
         }
         .logo {
@@ -34,20 +34,20 @@
         }
         label {
             font-weight: bold;
-            color: #1B3255; /* Azul escuro */
+            color: #1B3255;
         }
         input[type="text"] {
             padding: 10px;
-            border: 2px solid #1B3255; /* Azul escuro */
+            border: 2px solid #1B3255;
             border-radius: 5px;
             width: 100%;
             box-sizing: border-box;
         }
         h1 {
-            color: #1B3255; /* Azul escuro */
+            color: #1B3255;
         }
         h2 {
-            color: #1B3255; /* Azul escuro */
+            color: #1B3255;
         }
         ul {
             list-style-type: none;
@@ -55,25 +55,27 @@
         }
         li {
             padding: 5px 0;
-            border-bottom: 1px solid #ddd; /* Cinza claro */
+            border-bottom: 1px solid #ddd;
         }
         li:last-child {
             border-bottom: none;
         }
         p {
-            color: #1B3255; /* Azul escuro */
+            color: #1B3255;
         }
         .trem {
             font-size: 20px;
             margin-top: 20px;
         }
     </style>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+
     <script>
         let jsonData = [];
 
         function carregarDados() {
-            const url = 'patios.xlsx'; // Certifique-se de que o arquivo Excel está na mesma pasta que este arquivo HTML
+            const url = 'patios.xlsx';
 
             fetch(url)
                 .then(response => {
@@ -90,7 +92,8 @@
                 })
                 .catch(error => {
                     console.error('Erro ao ler o arquivo Excel:', error);
-                    document.getElementById('resultado').innerHTML = '<p>Erro ao acessar os dados. Verifique o link do arquivo Excel.</p>';
+                    document.getElementById('resultado').innerHTML =
+                        '<p>Erro ao acessar os dados. Verifique o link do arquivo Excel.</p>';
                 });
         }
 
@@ -103,6 +106,7 @@
                     <div>
                         <p><strong>Sigla do Pátio:</strong> ${patio['Sigla Patio'] || 'Não tem'}</p>
                         <p><strong>Nome do Pátio:</strong> ${patio.Patio || 'Não tem'}</p>
+                        <p><strong>KM:</strong> ${patio.KM || 'Não tem'}</p>
                         <p><strong>Região:</strong> ${patio.Região || 'Não tem'}</p>
                         <p><strong>UF:</strong> ${patio.UF || 'Não tem'}</p>
                         <p><strong>Município:</strong> ${patio.Município || 'Não tem'}</p>
@@ -118,9 +122,12 @@
 
         function buscarPatio() {
             const termo = document.getElementById('siglaInput').value.toUpperCase();
-            const patiosFiltrados = jsonData.filter(p => 
-                p['Sigla Patio'].includes(termo) || p.Patio.toUpperCase().includes(termo)
+
+            const patiosFiltrados = jsonData.filter(p =>
+                (p['Sigla Patio'] && p['Sigla Patio'].toUpperCase().includes(termo)) ||
+                (p.Patio && p.Patio.toUpperCase().includes(termo))
             );
+
             exibirPatios(patiosFiltrados);
         }
 
@@ -130,14 +137,18 @@
         });
     </script>
 </head>
+
 <body>
     <div class="logo">
         <img src="https://www.mrs.com.br/wp-content/uploads/2025/12/logo.png" alt="Logo MRS">
     </div>
+
     <h1>Busca de Pátios e Terminais Ferroviários</h1>
+
     <div class="search-container">
         <input type="text" id="siglaInput" placeholder="Digite a sigla ou nome do pátio">
     </div>
+
     <div id="resultado"></div>
 </body>
 </html>
